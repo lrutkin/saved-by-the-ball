@@ -310,6 +310,66 @@
     color: #7A1F1F;
   }
 
+  /* ===== SAVE SCORE ===== */
+  #save-score-area {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #player-name {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 12px;
+    border: 1px solid #C9D6C2;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+  }
+
+  #player-name:focus {
+    outline: none;
+    border-color: var(--pitch);
+  }
+
+  .small-btn {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--pitch-deep);
+    background: var(--lime);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    box-shadow: 2px 3px 0 rgba(14,61,33,0.5);
+    transition: transform 0.12s ease;
+  }
+
+  .small-btn.secondary {
+    background: #fff;
+    color: var(--pitch-deep);
+    border: 1px solid #C9D6C2;
+    box-shadow: none;
+  }
+
+  .small-btn.secondary:hover {
+    border-color: var(--pitch);
+    background: rgba(212,255,92,0.2);
+  }
+
+  .small-btn:hover {
+    transform: translate(-1px, -1px);
+  }
+
+  .small-btn:active {
+    transform: translate(1px, 1px);
+  }
+
   .card-foot {
     margin-top: 18px;
     padding-top: 12px;
@@ -319,6 +379,131 @@
     display: flex;
     align-items: center;
     gap: 6px;
+  }
+
+  /* ===== LEADERBOARD ===== */
+  .leaderboard {
+    width: 100%;
+    max-width: 380px;
+    margin-top: 18px;
+    background: rgba(255,255,255,0.92);
+    border: 2px dashed rgba(14,61,33,0.4);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+
+  .leaderboard-title {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pitch-deep);
+    margin-bottom: 2px;
+  }
+
+  .leaderboard-sub {
+    font-size: 11px;
+    font-style: italic;
+    color: var(--gray);
+    margin-bottom: 10px;
+  }
+
+  #leaderboard-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  #leaderboard-list.expanded {
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  #leaderboard-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  #leaderboard-list li.lb-extra {
+    display: none;
+  }
+
+  #leaderboard-list.expanded li.lb-extra {
+    display: flex;
+  }
+
+  #leaderboard-list li.empty {
+    color: var(--gray);
+    font-weight: 600;
+    font-style: italic;
+  }
+
+  .leaderboard-toggle {
+    display: block;
+    margin: 10px auto 0;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--pitch);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .leaderboard-toggle:hover {
+    color: var(--pitch-deep);
+  }
+
+  .lb-rank {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--cream);
+    border: 1px solid #C9D6C2;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  #leaderboard-list li:first-child .lb-rank {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #fff;
+  }
+
+  #leaderboard-list li:nth-child(2) .lb-rank {
+    background: var(--silver);
+    border-color: var(--silver);
+    color: #fff;
+  }
+
+  #leaderboard-list li:nth-child(3) .lb-rank {
+    background: var(--bronze);
+    border-color: var(--bronze);
+    color: #fff;
+  }
+
+  .lb-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .lb-score {
+    color: var(--pitch);
+    font-variant-numeric: tabular-nums;
   }
 
   /* ===== ACTION BUTTON ===== */
@@ -395,9 +580,23 @@
         <span class="points-badge" id="points-badge"></span>
         <p id="comp-question"></p>
         <div class="choices" id="choices"></div>
+        <div id="save-score-area" class="hidden">
+          <input type="text" id="player-name" placeholder="Your name" maxlength="20">
+          <button class="small-btn" id="save-score-btn" onclick="saveScore()">Save Score</button>
+          <button class="small-btn secondary" onclick="skipSave()">Play Again</button>
+        </div>
       </div>
 
       <div class="card-foot" id="card-foot">⚽ <span>World Cup facts, one card at a time</span></div>
+    </div>
+
+    <div id="leaderboard-wrap" class="hidden">
+      <div class="leaderboard">
+        <div class="leaderboard-title">🏆 Leaderboard</div>
+        <div class="leaderboard-sub">shared by everyone who plays</div>
+        <ol id="leaderboard-list"></ol>
+        <button class="leaderboard-toggle hidden" id="leaderboard-toggle" onclick="toggleLeaderboard()">Show more</button>
+      </div>
     </div>
 
     <div class="btn-wrap">
@@ -410,6 +609,40 @@
   </div>
 
 <script>
+  /* ===== FIREBASE SETUP (resilient) =====
+     Loaded via dynamic import so that if this network request is blocked
+     (e.g. inside a sandboxed preview), only the leaderboard degrades —
+     the rest of the site (Random + Competitive quiz) keeps working. */
+  let db = null;
+  let fsLib = null;
+  let firebaseReady = false;
+
+  const firebaseReadyPromise = (async () => {
+    try {
+      const [{ initializeApp }, fsModule] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+      ]);
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDS5HqKX3kj0RQ5PwDqyAHVGyEB9BkKOo0",
+        authDomain: "saved-by-the-ball.firebaseapp.com",
+        projectId: "saved-by-the-ball",
+        storageBucket: "saved-by-the-ball.firebasestorage.app",
+        messagingSenderId: "1042489750151",
+        appId: "1:1042489750151:web:bafdf6242206253e5bbe22"
+      };
+
+      const firebaseApp = initializeApp(firebaseConfig);
+      db = fsModule.getFirestore(firebaseApp);
+      fsLib = fsModule;
+      firebaseReady = true;
+    } catch (err) {
+      console.error('Firebase could not load (leaderboard will be unavailable):', err);
+      firebaseReady = false;
+    }
+  })();
+
   /* ===== CASUAL FACTS ===== */
   const facts = [
     "The first FIFA World Cup was held in Uruguay in 1930, and Uruguay won it on home soil.",
@@ -565,6 +798,7 @@
   let compScore = 0;
   let compPool = [];
   let compCurrent = null;
+  let highScores = []; // { name, score } — synced with persistent storage
 
   function shuffle(arr) {
     const a = arr.slice();
@@ -573,6 +807,12 @@
       [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   function setMode(m) {
@@ -585,6 +825,7 @@
 
     document.getElementById('new-fact-btn').classList.toggle('hidden', m !== 'fact');
     document.getElementById('comp-action-btn').classList.toggle('hidden', m !== 'competitive');
+    document.getElementById('leaderboard-wrap').classList.toggle('hidden', m !== 'competitive');
 
     if (m === 'fact') {
       document.getElementById('card-kicker').textContent = 'Trivia Card';
@@ -593,6 +834,7 @@
     } else {
       document.getElementById('card-kicker').textContent = 'Competitive Mode';
       document.getElementById('card-foot').innerHTML = '⚽ <span>10 points per correct answer</span>';
+      loadLeaderboard();
       resetCompetitive();
     }
   }
@@ -607,6 +849,7 @@
     document.getElementById('comp-question').textContent =
       "Think you know your World Cup facts? Answer until you get one wrong — easy questions are worth 5 points, harder ones 10.";
     document.getElementById('choices').innerHTML = '';
+    document.getElementById('save-score-area').classList.add('hidden');
     const btn = document.getElementById('comp-action-btn');
     btn.textContent = 'Start Competitive Mode';
     btn.classList.remove('hidden');
@@ -620,6 +863,7 @@
     compState = 'playing';
     compScore = 0;
     document.getElementById('card-num').textContent = 'Score: 0';
+    document.getElementById('save-score-area').classList.add('hidden');
     compPool = shuffle([...Array(quiz.length).keys()]);
     document.getElementById('comp-action-btn').classList.add('hidden');
     loadQuestion();
@@ -678,14 +922,138 @@
           "Game over! Final score: " + compScore + " pts.";
         document.getElementById('choices').innerHTML = '';
 
-        const btn = document.getElementById('comp-action-btn');
-        btn.textContent = 'Play Again';
-        btn.classList.remove('hidden');
+        const saveArea = document.getElementById('save-score-area');
+        const nameInput = document.getElementById('player-name');
+        nameInput.value = '';
+        saveArea.classList.remove('hidden');
+        nameInput.focus();
       }, 900);
     }
   }
 
+  function makePlayerId(name) {
+    return name.trim().toLowerCase().replace(/[\/\s]+/g, '-').slice(0, 60) || 'anonymous';
+  }
+
+  async function saveScore() {
+    const nameInput = document.getElementById('player-name');
+    let name = nameInput.value.trim();
+    if (!name) name = 'Anonymous';
+
+    const saveBtn = document.getElementById('save-score-btn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+
+    await firebaseReadyPromise;
+
+    let resultMessage;
+    if (!firebaseReady) {
+      resultMessage = "Final score: " + compScore + " pts. (Couldn't reach the leaderboard right now — your score wasn't saved.)";
+    } else {
+      try {
+        // each name only ever holds one entry — Firestore rules reject this
+        // write if it isn't an improvement over that name's existing score
+        await fsLib.setDoc(fsLib.doc(db, 'scores', makePlayerId(name)), {
+          name: name,
+          score: compScore
+        });
+        resultMessage = "Score saved! Final score: " + compScore + " pts.";
+      } catch (err) {
+        resultMessage = "Final score: " + compScore + " pts. (Your saved best under that name was already higher, so the leaderboard wasn't updated.)";
+      }
+    }
+
+    await loadLeaderboard();
+
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Score';
+
+    document.getElementById('save-score-area').classList.add('hidden');
+    document.getElementById('comp-question').textContent = resultMessage;
+
+    const btn = document.getElementById('comp-action-btn');
+    btn.textContent = 'Play Again';
+    btn.classList.remove('hidden');
+  }
+
+  function skipSave() {
+    document.getElementById('save-score-area').classList.add('hidden');
+    startCompetitive();
+  }
+
+  async function loadLeaderboard() {
+    const list = document.getElementById('leaderboard-list');
+    list.innerHTML = '<li class="empty">Loading scores…</li>';
+
+    await firebaseReadyPromise;
+
+    if (!firebaseReady) {
+      list.innerHTML = '';
+      const li = document.createElement('li');
+      li.className = 'empty';
+      li.textContent = 'Leaderboard unavailable right now.';
+      list.appendChild(li);
+      return;
+    }
+
+    try {
+      const q = fsLib.query(fsLib.collection(db, 'scores'), fsLib.orderBy('score', 'desc'), fsLib.limit(50));
+      const snap = await fsLib.getDocs(q);
+      highScores = snap.docs.map(d => d.data());
+    } catch (err) {
+      console.error('Could not load leaderboard:', err);
+      highScores = [];
+    }
+    renderLeaderboard();
+  }
+
+  let leaderboardExpanded = false;
+
+  function toggleLeaderboard() {
+    leaderboardExpanded = !leaderboardExpanded;
+    renderLeaderboard();
+  }
+
+  function renderLeaderboard() {
+    const list = document.getElementById('leaderboard-list');
+    const toggleBtn = document.getElementById('leaderboard-toggle');
+    list.innerHTML = '';
+    list.classList.remove('expanded');
+    toggleBtn.classList.add('hidden');
+
+    if (highScores.length === 0) {
+      const li = document.createElement('li');
+      li.className = 'empty';
+      li.textContent = 'No scores yet — be the first!';
+      list.appendChild(li);
+      return;
+    }
+
+    const medals = ['🥇', '🥈', '🥉'];
+    highScores.forEach((entry, idx) => {
+      const li = document.createElement('li');
+      if (idx >= 3) li.classList.add('lb-extra');
+      const rankDisplay = idx < 3 ? medals[idx] : String(idx + 1);
+      li.innerHTML =
+        '<span class="lb-rank">' + rankDisplay + '</span>' +
+        '<span class="lb-name">' + escapeHtml(entry.name) + '</span>' +
+        '<span class="lb-score">' + entry.score + ' pts</span>';
+      list.appendChild(li);
+    });
+
+    if (highScores.length > 3) {
+      toggleBtn.classList.remove('hidden');
+      toggleBtn.textContent = leaderboardExpanded
+        ? 'Show less'
+        : 'Show more (' + (highScores.length - 3) + ')';
+      list.classList.toggle('expanded', leaderboardExpanded);
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('player-name').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') saveScore();
+    });
     newFact();
   });
 </script>
