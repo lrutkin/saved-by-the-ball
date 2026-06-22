@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saved by the Ball — World Cup Trivia</title>
+<style>
+
+  :root {
+    --pitch: #14532D;
+    --pitch-deep: #0E3D21;
+    --grass-a: #2E8B4F;
+    --grass-b: #287C46;
+    --lime: #D4FF5C;
+    --cream: #FBFCF6;
+    --ink: #14171A;
+    --gray: #5C6760;
+    --red: #C0392B;
+    --gold: #E8B923;
+    --silver: #A7AEB5;
+    --bronze: #B2702C;
+  }
+
+  * { box-sizing: border-box; }
+
+  .hidden { display: none !important; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(212,255,92,0.18), transparent 55%),
+      repeating-linear-gradient(
+        125deg,
+        var(--grass-a) 0px, var(--grass-a) 42px,
+        var(--grass-b) 42px, var(--grass-b) 84px
+      );
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 18px;
+  }
+
+  /* ===== PITCH FRAME ===== */
+  .pitch-frame {
+    width: 100%;
+    max-width: 600px;
+    border: 3px dashed rgba(255,255,255,0.85);
+    border-radius: 28px;
+    padding: 44px 24px 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .pitch-frame::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 230px;
+    height: 230px;
+    margin: -115px 0 0 -115px;
+    border: 3px dashed rgba(255,255,255,0.35);
+    border-radius: 50%;
+    z-index: 0;
+  }
+
+  .pitch-frame > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== HEADER ===== */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .brand-ball {
+    font-size: 30px;
+    line-height: 1;
+    display: inline-block;
+    transform: rotate(-8deg);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+    text-shadow: 0 2px 0 rgba(14,61,33,0.6);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 420px) {
+    h1 {
+      font-size: 22px;
+    }
+    .brand-ball {
+      font-size: 22px;
+    }
+  }
+
+  h1 .ball-text {
+    color: var(--lime);
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pitch-deep);
+    background: var(--lime);
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+    transform: rotate(-2deg);
+    box-shadow: 2px 3px 0 rgba(14,61,33,0.35);
+  }
+
+  .blurb {
+    max-width: 440px;
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.55;
+    color: #EFFBE8;
+    margin: 0 0 24px;
+  }
+
+  /* ===== MODE TOGGLE ===== */
+  .mode-toggle {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.14);
+    border: 2px dashed rgba(255,255,255,0.55);
+    border-radius: 999px;
+    padding: 4px;
+    margin-bottom: 24px;
+  }
+
+  .mode-btn {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .mode-btn.active {
+    background: var(--lime);
+    color: var(--pitch-deep);
+    box-shadow: 2px 2px 0 rgba(14,61,33,0.4);
+  }
+
+  /* ===== INDEX CARD ===== */
+  .card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--cream);
+    border-radius: 16px;
+    box-shadow: 6px 8px 0 rgba(14,61,33,0.5);
+    padding: 26px 26px 22px;
+    position: relative;
+    overflow: hidden;
+    transform: rotate(-1.5deg);
+    transition: transform 0.2s ease;
+  }
+
+  .card:hover {
+    transform: rotate(0deg);
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 7px;
+    background: repeating-linear-gradient(
+      45deg,
+      var(--pitch) 0px, var(--pitch) 8px,
+      var(--lime) 8px, var(--lime) 16px
+    );
+  }
+
+  .card::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    right: 26px;
+    width: 46px;
+    height: 22px;
+    background: var(--lime);
+    opacity: 0.85;
+    transform: rotate(8deg);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  }
+
+  .card-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .card-label span:first-child {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  .card-num {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--pitch);
+    background: #fff;
+    border: 1px dashed #C9D6C2;
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .points-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+
+  .points-badge.easy {
+    background: rgba(212,255,92,0.45);
+    color: var(--pitch-deep);
+  }
+
+  .points-badge.hard {
+    background: rgba(192,57,43,0.12);
+    color: var(--red);
+  }
+
+  #fact-text, #comp-question {
+    font-size: 19px;
+    line-height: 1.5;
+    font-weight: 650;
+    color: var(--ink);
+    margin: 0;
+    min-height: 92px;
+    transition: opacity 0.18s ease;
+  }
+
+  /* ===== COMPETITIVE CHOICES ===== */
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .choice-btn {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid #C9D6C2;
+    border-radius: 10px;
+    padding: 10px 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .choice-btn:hover:not(:disabled) {
+    border-color: var(--pitch);
+    background: rgba(212,255,92,0.25);
+  }
+
+  .choice-btn:disabled {
+    cursor: default;
+  }
+
+  .choice-btn.correct {
+    background: #DFF7DF;
+    border-color: var(--grass-a);
+    color: var(--pitch-deep);
+  }
+
+  .choice-btn.wrong {
+    background: #FBDADA;
+    border-color: var(--red);
+    color: #7A1F1F;
+  }
+
+  .card-foot {
+    margin-top: 18px;
+    padding-top: 12px;
+    border-top: 1px dashed #C9D6C2;
+    font-size: 11px;
+    color: var(--gray);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ===== ACTION BUTTON ===== */
+  .btn-wrap {
+    margin-top: 28px;
+  }
+
+  .primary-btn {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--pitch-deep);
+    background: var(--lime);
+    border: none;
+    border-radius: 999px;
+    padding: 13px 30px;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    box-shadow: 4px 5px 0 rgba(14,61,33,0.55);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .primary-btn:hover {
+    transform: translate(-2px, -2px) rotate(-1deg);
+    box-shadow: 6px 7px 0 rgba(14,61,33,0.55);
+  }
+
+  .primary-btn:active {
+    transform: translate(1px, 2px) rotate(0deg);
+    box-shadow: 2px 2px 0 rgba(14,61,33,0.55);
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    margin-top: 36px;
+    font-size: 12px;
+    color: #EFFBE8;
+    text-align: center;
+    opacity: 0.85;
+  }
+
+</style>
+</head>
+<body>
+
+  <div class="pitch-frame">
+
+    <div class="brand">
+      <span class="brand-ball">⚽</span>
+      <h1>Saved by the <span class="ball-text">Ball</span></h1>
+    </div>
+
+    <div class="eyebrow">World Cup Trivia Generator</div>
+
+    <p class="blurb">
+      Have you found yourself surrounded by football fanatics? Go from know nothing
+      to know it all with our football trivia generator.
+    </p>
+
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="mode-fact-btn" onclick="setMode('fact')">Random</button>
+      <button class="mode-btn" id="mode-comp-btn" onclick="setMode('competitive')">Competitive</button>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        <span id="card-kicker">Trivia Card</span>
+        <span class="card-num" id="card-num">No. 00</span>
+      </div>
+
+      <p id="fact-text"></p>
+
+      <div id="comp-area" class="hidden">
+        <span class="points-badge" id="points-badge"></span>
+        <p id="comp-question"></p>
+        <div class="choices" id="choices"></div>
+      </div>
+
+      <div class="card-foot" id="card-foot">⚽ <span>World Cup facts, one card at a time</span></div>
+    </div>
+
+    <div class="btn-wrap">
+      <button id="new-fact-btn" class="primary-btn" onclick="newFact()">New Fact</button>
+      <button id="comp-action-btn" class="primary-btn hidden" onclick="handleCompAction()">Start Competitive Mode</button>
+    </div>
+
+    <div class="footer">Saved by the Ball — football trivia, made simple.</div>
+
+  </div>
+
+<script>
+  /* ===== CASUAL FACTS ===== */
+  const facts = [
+    "The first FIFA World Cup was held in Uruguay in 1930, and Uruguay won it on home soil.",
+    "Brazil is the only nation to have played in every single World Cup tournament ever held.",
+    "Brazil has won the World Cup a record five times: 1958, 1962, 1970, 1994, and 2002.",
+    "Germany and Italy are tied for second place, each having won the World Cup four times.",
+    "Turkey's Hakan Şükür scored the fastest goal in World Cup history — just 11 seconds into a match in 2002.",
+    "France's Just Fontaine scored 13 goals at the 1958 World Cup, still the record for most goals in a single tournament.",
+    "Germany's Miroslav Klose holds the all-time career World Cup scoring record with 16 goals.",
+    "The current World Cup trophy is made of solid 18-karat gold and weighs about 6.1 kilograms.",
+    "The original Jules Rimet Trophy was stolen in England in 1966 and later found by a dog named Pickles.",
+    "The 1950 World Cup final at Maracanã Stadium drew an estimated 199,854 fans, the largest crowd ever at a football match.",
+    "England has won the World Cup exactly once, on home soil in 1966.",
+    "The 1970 World Cup in Mexico was the first to be broadcast in color worldwide.",
+    "North Korea stunned the football world by beating Italy and reaching the quarterfinals in the 1966 World Cup.",
+    "Qatar 2022 was the first World Cup ever held in the Middle East, and the first played in November and December.",
+    "The 2026 World Cup will be the first hosted by three countries — the USA, Canada, and Mexico — and the first with 48 teams.",
+    "Diego Maradona's 'Hand of God' goal and his legendary 'Goal of the Century' both happened in the same 1986 match against England.",
+    "Zinedine Zidane was sent off for headbutting Marco Materazzi in the 2006 World Cup final, his very last match as a pro.",
+    "England's Geoff Hurst remains the only player ever to score a hat-trick in a World Cup final, in 1966.",
+    "Italy (1934, 1938) and Brazil (1958, 1962) are the only teams to win back-to-back World Cup titles.",
+    "World Cup Willie, a lion in a Union Jack shirt, debuted at the 1966 World Cup as the very first official World Cup mascot.",
+    "Italy won the 1934 World Cup on home soil, becoming the first European nation to lift the trophy.",
+    "The World Cup was not held in 1942 or 1946 due to the disruption of World War II.",
+    "Pelé became the youngest World Cup winner in history at age 17, lifting the trophy with Brazil in 1958.",
+    "France won its first World Cup title in 1998, hosting and beating Brazil in the final.",
+    "Spain won its first World Cup in 2010, beating the Netherlands in extra time.",
+    "Known as the 'Maracanazo', Uruguay stunned host nation Brazil to win the 1950 World Cup final.",
+    "Argentina has won the World Cup three times, most recently in 2022 with Lionel Messi lifting the trophy.",
+    "The World Cup has been held every four years since 1930, aside from a gap during World War II.",
+    "Cameroon became the first African team to reach a World Cup quarterfinal, doing so in 1990.",
+    "Adidas has supplied the official match ball for every World Cup since 1970.",
+    "Lothar Matthäus held the record for most World Cup appearances for over two decades, playing 25 matches for Germany.",
+    "Lionel Messi broke the all-time World Cup appearances record in 2022, reaching his 26th match for Argentina.",
+    "Pelé is the only player to win the World Cup three times, lifting the trophy with Brazil in 1958, 1962, and 1970.",
+    "Oliver Kahn remains the only goalkeeper ever named the World Cup's best player, winning the Golden Ball in 2002.",
+    "Salvatore Schillaci won both the Golden Boot and the Golden Ball at the 1990 World Cup despite starting the tournament on the bench.",
+    "James Rodríguez won the 2014 World Cup Golden Boot with six goals, even though Colombia didn't reach the final.",
+    "Kylian Mbappé became the youngest player to score in a World Cup final since Pelé, doing so for France in 2018 at age 19.",
+    "Roger Milla became the oldest player to score in a World Cup, netting for Cameroon at age 42 in 1994.",
+    "Cristiano Ronaldo and Lionel Messi are the only players to have scored in five different World Cup tournaments.",
+    "Diego Forlán won the Golden Ball as the World Cup's best player in 2010, despite Uruguay finishing fourth.",
+    "The 2026 World Cup is being played across 16 host cities — 11 in the United States, three in Mexico, and two in Canada.",
+    "The 2026 World Cup opened on June 11 with Mexico playing the opening match at Estadio Azteca in Mexico City.",
+    "The 2026 World Cup final will be played on July 19 at MetLife Stadium in New York/New Jersey.",
+    "The 2026 format splits 48 teams into 12 groups of four, with the top two from each group plus the eight best third-place finishers advancing to a round of 32.",
+    "The 2026 World Cup features 104 total matches, up from 64 at previous 32-team tournaments.",
+    "Estadio Azteca in Mexico City became the first stadium to host matches at three different World Cups, in 1970, 1986, and 2026.",
+    "The official match ball for the 2026 World Cup is the Adidas Trionda.",
+    "The 2026 World Cup champions will take home a record $50 million in prize money.",
+    "The official mascots of the 2026 World Cup are Maple the Moose (Canada), Zayu the Jaguar (Mexico), and Clutch the Bald Eagle (United States).",
+    "The 2026 World Cup final will feature the first-ever Super Bowl-style halftime show in tournament history, curated by Chris Martin of Coldplay alongside Madonna, Shakira, and BTS.",
+    "A football match is played between two teams of 11 players each, for 22 players on the pitch at a time.",
+    "A standard football match lasts 90 minutes, split into two 45-minute halves.",
+    "For international matches, a football pitch can be up to 105 meters long and 68 meters wide.",
+    "A regulation football must weigh between 410 and 450 grams.",
+    "A player is sent off if they receive two yellow cards or one straight red card in a match.",
+    "A standard football goal is 7.32 meters wide and 2.44 meters high.",
+    "Most top leagues now allow each team up to five substitutions per match.",
+    "A football match is officiated by one referee and two assistant referees on the touchlines.",
+    "The Football Association, which wrote football's first official rules, was founded in England in 1863.",
+    "If a knockout match is still tied after extra time, the winner is decided by a penalty shootout."
+  ];
+
+  let lastFactIndex = -1;
+  let factCount = 0;
+
+  function newFact() {
+    let i;
+    do {
+      i = Math.floor(Math.random() * facts.length);
+    } while (i === lastFactIndex && facts.length > 1);
+    lastFactIndex = i;
+    factCount++;
+
+    const el = document.getElementById('fact-text');
+    el.style.opacity = 0;
+    setTimeout(() => {
+      el.textContent = facts[i];
+      updateBadgeFact();
+      el.style.opacity = 1;
+    }, 140);
+  }
+
+  function updateBadgeFact() {
+    document.getElementById('card-num').textContent = "No. " + String(factCount).padStart(2, '0');
+  }
+
+  /* ===== COMPETITIVE MODE ===== */
+  const quiz = [
+    { text: "The first FIFA World Cup was held in Uruguay in ____, and the hosts won it on home soil.", answer: "1930", choices: ["1924", "1928", "1930", "1934"], difficulty: "hard", points: 10 },
+    { text: "Brazil has won the World Cup a record ____ times, more than any other nation.", answer: "5", choices: ["3", "4", "5", "6"], difficulty: "hard", points: 10 },
+    { text: "Germany and Italy have each won the World Cup ____ times, tying for second place all-time.", answer: "4", choices: ["2", "3", "4", "5"], difficulty: "hard", points: 10 },
+    { text: "Turkey's Hakan Şükür scored the fastest goal in World Cup history, finding the net in just ____ seconds.", answer: "11", choices: ["8", "11", "15", "20"], difficulty: "hard", points: 10 },
+    { text: "France's Just Fontaine scored ____ goals at the 1958 World Cup, still a single-tournament record.", answer: "13", choices: ["9", "11", "13", "15"], difficulty: "hard", points: 10 },
+    { text: "Germany's Miroslav Klose holds the career World Cup scoring record with ____ goals.", answer: "16", choices: ["12", "14", "16", "18"], difficulty: "hard", points: 10 },
+    { text: "The current World Cup trophy is made of solid ____-karat gold.", answer: "18", choices: ["14", "18", "22", "24"], difficulty: "hard", points: 10 },
+    { text: "The original Jules Rimet Trophy was stolen in England in ____ and later found by a dog named Pickles.", answer: "1966", choices: ["1962", "1966", "1970", "1974"], difficulty: "hard", points: 10 },
+    { text: "An estimated ____ fans packed the Maracanã for the 1950 World Cup final, the largest crowd ever at a football match.", answer: "199,854", choices: ["150,000", "175,000", "199,854", "210,000"], difficulty: "hard", points: 10 },
+    { text: "England has won the World Cup exactly once, lifting the trophy on home soil in ____.", answer: "1966", choices: ["1962", "1966", "1970", "1974"], difficulty: "hard", points: 10 },
+    { text: "The ____ World Cup in Mexico was the first ever broadcast in color worldwide.", answer: "1970", choices: ["1966", "1970", "1974", "1978"], difficulty: "hard", points: 10 },
+    { text: "Qatar ____ was the first World Cup ever held in the Middle East.", answer: "2022", choices: ["2014", "2018", "2022", "2026"], difficulty: "hard", points: 10 },
+    { text: "The ____ World Cup will be the first ever hosted by three countries — the USA, Canada, and Mexico.", answer: "2026", choices: ["2022", "2026", "2030", "2034"], difficulty: "hard", points: 10 },
+    { text: "Diego Maradona's 'Hand of God' and 'Goal of the Century' both happened in the same ____ match against England.", answer: "1986", choices: ["1982", "1986", "1990", "1994"], difficulty: "hard", points: 10 },
+    { text: "Zinedine Zidane was sent off for headbutting an opponent in the ____ World Cup final, his last match as a pro.", answer: "2006", choices: ["1998", "2002", "2006", "2010"], difficulty: "hard", points: 10 },
+    { text: "England's Geoff Hurst remains the only player to score a hat-trick in a World Cup final, doing so in ____.", answer: "1966", choices: ["1962", "1966", "1970", "1974"], difficulty: "hard", points: 10 },
+    { text: "World Cup Willie debuted as the very first official mascot at the ____ World Cup.", answer: "1966", choices: ["1962", "1966", "1970", "1974"], difficulty: "hard", points: 10 },
+    { text: "Italy won the ____ World Cup on home soil, becoming the first European nation to lift the trophy.", answer: "1934", choices: ["1930", "1934", "1938", "1950"], difficulty: "hard", points: 10 },
+    { text: "The World Cup was not held in 1942 or ____ due to the disruption of World War II.", answer: "1946", choices: ["1944", "1946", "1948", "1950"], difficulty: "hard", points: 10 },
+    { text: "Pelé became the youngest World Cup winner in history at age ____, lifting the trophy with Brazil in 1958.", answer: "17", choices: ["15", "17", "19", "21"], difficulty: "hard", points: 10 },
+    { text: "France won its first World Cup title in ____, hosting and beating Brazil in the final.", answer: "1998", choices: ["1994", "1998", "2002", "2006"], difficulty: "hard", points: 10 },
+    { text: "Spain won its first World Cup in ____, beating the Netherlands in extra time.", answer: "2010", choices: ["2006", "2010", "2014", "2018"], difficulty: "hard", points: 10 },
+    { text: "Known as the 'Maracanazo', Uruguay stunned host nation Brazil to win the ____ World Cup final.", answer: "1950", choices: ["1946", "1950", "1954", "1958"], difficulty: "hard", points: 10 },
+    { text: "Argentina has won the World Cup ____ times, most recently in 2022.", answer: "3", choices: ["2", "3", "4", "5"], difficulty: "hard", points: 10 },
+    { text: "The World Cup has been held every ____ years since 1930, aside from a wartime gap.", answer: "4", choices: ["2", "3", "4", "5"], difficulty: "hard", points: 10 },
+    { text: "Cameroon became the first African team to reach a World Cup quarterfinal, doing so in ____.", answer: "1990", choices: ["1982", "1986", "1990", "1994"], difficulty: "hard", points: 10 },
+    { text: "Adidas has supplied the official match ball for every World Cup since ____.", answer: "1970", choices: ["1966", "1970", "1974", "1978"], difficulty: "hard", points: 10 },
+    { text: "____ held the record for most World Cup appearances for over two decades, with 25 matches for Germany.", answer: "Lothar Matthäus", choices: ["Lothar Matthäus", "Franz Beckenbauer", "Diego Maradona", "Pelé"], difficulty: "hard", points: 10 },
+    { text: "Lionel Messi broke the all-time World Cup appearances record in ____, reaching his 26th match for Argentina.", answer: "2022", choices: ["2014", "2018", "2022", "2026"], difficulty: "hard", points: 10 },
+    { text: "Pelé is the only player to win the World Cup ____ times, all with Brazil.", answer: "3", choices: ["2", "3", "4", "5"], difficulty: "hard", points: 10 },
+    { text: "____ remains the only goalkeeper ever named the World Cup's best player, winning the Golden Ball in 2002.", answer: "Oliver Kahn", choices: ["Oliver Kahn", "Gianluigi Buffon", "Iker Casillas", "Manuel Neuer"], difficulty: "hard", points: 10 },
+    { text: "Salvatore Schillaci won the Golden Boot and Golden Ball at the ____ World Cup despite starting on the bench.", answer: "1990", choices: ["1986", "1990", "1994", "1998"], difficulty: "hard", points: 10 },
+    { text: "James Rodríguez won the 2014 World Cup Golden Boot with ____ goals.", answer: "6", choices: ["4", "5", "6", "7"], difficulty: "hard", points: 10 },
+    { text: "Kylian Mbappé became the youngest player to score in a World Cup final since Pelé, doing so in 2018 at age ____.", answer: "19", choices: ["17", "18", "19", "20"], difficulty: "hard", points: 10 },
+    { text: "Roger Milla became the oldest player to score in a World Cup, netting for Cameroon at age ____ in 1994.", answer: "42", choices: ["38", "40", "42", "44"], difficulty: "hard", points: 10 },
+    { text: "Cristiano Ronaldo and ____ are the only players to have scored in five different World Cup tournaments.", answer: "Lionel Messi", choices: ["Lionel Messi", "Neymar", "Luka Modrić", "Robert Lewandowski"], difficulty: "hard", points: 10 },
+    { text: "____ won the Golden Ball as the World Cup's best player in 2010, despite Uruguay finishing fourth.", answer: "Diego Forlán", choices: ["Diego Forlán", "Luis Suárez", "Edinson Cavani", "Diego Lugano"], difficulty: "hard", points: 10 },
+    { text: "The 2026 World Cup is being played across ____ host cities in the United States, Mexico, and Canada.", answer: "16", choices: ["12", "14", "16", "18"], difficulty: "hard", points: 10 },
+    { text: "The 2026 World Cup opened on June 11 with Mexico playing the opening match at ____ in Mexico City.", answer: "Estadio Azteca", choices: ["Estadio Azteca", "Maracanã", "Wembley Stadium", "Camp Nou"], difficulty: "hard", points: 10 },
+    { text: "The 2026 World Cup final will be played on July 19 at ____ in New York/New Jersey.", answer: "MetLife Stadium", choices: ["MetLife Stadium", "SoFi Stadium", "Lincoln Financial Field", "Mercedes-Benz Stadium"], difficulty: "hard", points: 10 },
+    { text: "The 2026 format splits 48 teams into ____ groups of four.", answer: "12", choices: ["8", "10", "12", "16"], difficulty: "hard", points: 10 },
+    { text: "The 2026 World Cup features ____ total matches, up from 64 at previous 32-team tournaments.", answer: "104", choices: ["80", "96", "104", "112"], difficulty: "hard", points: 10 },
+    { text: "____ became the first stadium to host matches at three different World Cups, in 1970, 1986, and 2026.", answer: "Estadio Azteca", choices: ["Estadio Azteca", "Maracanã", "Rose Bowl", "Wembley Stadium"], difficulty: "hard", points: 10 },
+    { text: "The official match ball for the 2026 World Cup is the Adidas ____.", answer: "Trionda", choices: ["Trionda", "Telstar", "Brazuca", "Jabulani"], difficulty: "hard", points: 10 },
+    { text: "The 2026 World Cup champions will take home a record $____ million in prize money.", answer: "50", choices: ["38", "42", "46", "50"], difficulty: "hard", points: 10 },
+    { text: "The United States' official 2026 World Cup mascot is Clutch the ____.", answer: "Bald Eagle", choices: ["Bald Eagle", "Golden Eagle", "Grizzly Bear", "Bison"], difficulty: "hard", points: 10 },
+    { text: "The 2026 World Cup final's halftime show is curated by Chris Martin of ____.", answer: "Coldplay", choices: ["Coldplay", "U2", "Maroon 5", "The Killers"], difficulty: "hard", points: 10 },
+    { text: "The 2026 World Cup will expand to ____ teams for the first time.", answer: "48", choices: ["32", "40", "48", "56"], difficulty: "hard", points: 10 },
+    { text: "Each football team fields ____ players at a time, not counting substitutes.", answer: "11", choices: ["9", "10", "11", "12"], difficulty: "easy", points: 5 },
+    { text: "A standard football match lasts ____ minutes, not including stoppage time.", answer: "90", choices: ["80", "85", "90", "95"], difficulty: "easy", points: 5 },
+    { text: "For international matches, a football pitch can be up to ____ meters long.", answer: "105", choices: ["90", "100", "105", "110"], difficulty: "easy", points: 5 },
+    { text: "A regulation football must weigh no more than ____ grams.", answer: "450", choices: ["400", "425", "450", "475"], difficulty: "easy", points: 5 },
+    { text: "A player is sent off after picking up ____ yellow cards in the same match.", answer: "2", choices: ["1", "2", "3", "4"], difficulty: "easy", points: 5 },
+    { text: "A standard football goal is ____ meters wide.", answer: "7.32", choices: ["6.1", "7.32", "7.5", "8"], difficulty: "easy", points: 5 },
+    { text: "Most top leagues now allow each team up to ____ substitutions per match.", answer: "5", choices: ["3", "4", "5", "6"], difficulty: "easy", points: 5 },
+    { text: "A standard match is officiated by one referee and ____ assistant referees.", answer: "2", choices: ["1", "2", "3", "4"], difficulty: "easy", points: 5 },
+    { text: "The Football Association, which wrote football's first official rules, was founded in England in ____.", answer: "1863", choices: ["1857", "1863", "1871", "1888"], difficulty: "easy", points: 5 },
+    { text: "Knockout matches tied after extra time are decided by a ____ shootout.", answer: "penalty", choices: ["free kick", "corner", "penalty", "throw-in"], difficulty: "easy", points: 5 }
+  ];
+
+  let mode = 'fact';
+  let compState = 'idle'; // idle | playing | over
+  let compScore = 0;
+  let compPool = [];
+  let compCurrent = null;
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.getElementById('mode-fact-btn').classList.toggle('active', m === 'fact');
+    document.getElementById('mode-comp-btn').classList.toggle('active', m === 'competitive');
+
+    document.getElementById('fact-text').classList.toggle('hidden', m !== 'fact');
+    document.getElementById('comp-area').classList.toggle('hidden', m !== 'competitive');
+
+    document.getElementById('new-fact-btn').classList.toggle('hidden', m !== 'fact');
+    document.getElementById('comp-action-btn').classList.toggle('hidden', m !== 'competitive');
+
+    if (m === 'fact') {
+      document.getElementById('card-kicker').textContent = 'Trivia Card';
+      document.getElementById('card-foot').innerHTML = '⚽ <span>World Cup facts, one card at a time</span>';
+      updateBadgeFact();
+    } else {
+      document.getElementById('card-kicker').textContent = 'Competitive Mode';
+      document.getElementById('card-foot').innerHTML = '⚽ <span>10 points per correct answer</span>';
+      resetCompetitive();
+    }
+  }
+
+  function resetCompetitive() {
+    compState = 'idle';
+    compScore = 0;
+    compPool = [];
+    document.getElementById('card-num').textContent = 'Score: 0';
+    document.getElementById('points-badge').textContent = '';
+    document.getElementById('points-badge').classList.remove('easy', 'hard');
+    document.getElementById('comp-question').textContent =
+      "Think you know your World Cup facts? Answer until you get one wrong — easy questions are worth 5 points, harder ones 10.";
+    document.getElementById('choices').innerHTML = '';
+    const btn = document.getElementById('comp-action-btn');
+    btn.textContent = 'Start Competitive Mode';
+    btn.classList.remove('hidden');
+  }
+
+  function handleCompAction() {
+    startCompetitive();
+  }
+
+  function startCompetitive() {
+    compState = 'playing';
+    compScore = 0;
+    document.getElementById('card-num').textContent = 'Score: 0';
+    compPool = shuffle([...Array(quiz.length).keys()]);
+    document.getElementById('comp-action-btn').classList.add('hidden');
+    loadQuestion();
+  }
+
+  function loadQuestion() {
+    if (compPool.length === 0) {
+      compPool = shuffle([...Array(quiz.length).keys()]);
+    }
+    compCurrent = quiz[compPool.pop()];
+
+    const qEl = document.getElementById('comp-question');
+    qEl.style.opacity = 0;
+    setTimeout(() => {
+      qEl.textContent = compCurrent.text;
+      qEl.style.opacity = 1;
+
+      const badge = document.getElementById('points-badge');
+      badge.textContent = (compCurrent.difficulty === 'easy' ? 'Easy' : 'Hard') + ' · ' + compCurrent.points + ' pts';
+      badge.classList.remove('easy', 'hard');
+      badge.classList.add(compCurrent.difficulty);
+
+      const choicesEl = document.getElementById('choices');
+      choicesEl.innerHTML = '';
+      shuffle(compCurrent.choices).forEach(choice => {
+        const b = document.createElement('button');
+        b.className = 'choice-btn';
+        b.textContent = choice;
+        b.onclick = () => handleAnswer(choice, b);
+        choicesEl.appendChild(b);
+      });
+    }, 120);
+  }
+
+  function handleAnswer(choice, btnEl) {
+    if (compState !== 'playing') return;
+
+    const choiceButtons = document.querySelectorAll('.choice-btn');
+    choiceButtons.forEach(b => b.disabled = true);
+
+    if (String(choice) === String(compCurrent.answer)) {
+      btnEl.classList.add('correct');
+      compScore += compCurrent.points;
+      document.getElementById('card-num').textContent = 'Score: ' + compScore;
+      setTimeout(loadQuestion, 700);
+    } else {
+      btnEl.classList.add('wrong');
+      choiceButtons.forEach(b => {
+        if (b.textContent === String(compCurrent.answer)) {
+          b.classList.add('correct');
+        }
+      });
+      compState = 'over';
+      setTimeout(() => {
+        document.getElementById('comp-question').textContent =
+          "Game over! Final score: " + compScore + " pts.";
+        document.getElementById('choices').innerHTML = '';
+
+        const btn = document.getElementById('comp-action-btn');
+        btn.textContent = 'Play Again';
+        btn.classList.remove('hidden');
+      }, 900);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    newFact();
+  });
+</script>
+
+</body>
+</html>
